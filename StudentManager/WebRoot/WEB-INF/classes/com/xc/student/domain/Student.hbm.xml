@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping auto-import="true">
+	<class name="com.xc.student.domain.Student" table="student">
+		<id name="studentId">
+			<generator class="uuid"></generator>
+		</id>
+		
+		<property name="name"></property>
+		<property name="gender"></property>
+		<property name="mustTuition"></property>
+		<property name="actualTuition"></property>
+		
+		<property name="telephone"></property>
+		<property name="identity"></property>
+		<property name="qq"></property>
+		<property name="email"></property>
+		
+		<property name="classes"></property>
+		<property name="identityAddress"></property>
+		<property name="address"></property>
+		
+		<property name="remark"></property>
+		<property name="homeTelephone"></property>
+		<property name="homeContact"></property>
+		
+		<!-- 多对一【一个专业】 -->
+		<many-to-one name="profession" class="com.xc.profession.domain.Profession" column="professionId"></many-to-one>
+	</class>
+</hibernate-mapping>
+
+
+
+
+
+

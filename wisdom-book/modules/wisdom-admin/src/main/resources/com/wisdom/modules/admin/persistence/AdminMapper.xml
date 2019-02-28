@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wisdom.modules.admin.persistence.AdminMapper">
+
+    <resultMap id="admin" type="com.wisdom.modules.admin.domain.Admin">
+        <id property="id" column="id"/>
+        <result property="username" column="name"></result>
+        <result property="password" column="password"></result>
+        <result property="adminStatus" column="adminStatus"></result>
+        <result property="loginNum" column="loginNum"></result>
+        <result property="createTime" column="createTime"></result>
+        <result property="identity" column="identity"></result>
+    </resultMap>
+
+    <resultMap id="adminLog" type="com.wisdom.modules.admin.domain.AdminLog">
+        <id property="id" column="id"/>
+        <result property="name" column="name"></result>
+        <result property="password" column="password"></result>
+        <result property="system" column="system"></result>
+        <result property="isSuccess" column="issuccess"></result>
+        <result property="loginTime" column="loginTime"></result>
+        <result property="ipAddress" column="ipAddress"></result>
+    </resultMap>
+
+    <resultMap id="chat" type="com.wisdom.modules.admin.domain.Chat">
+        <id property="charId" column="charId"/>
+        <result property="name" column="name"></result>
+        <result property="userId" column="userId"></result>
+        <result property="adminId" column="adminId"></result>
+        <result property="context" column="context"></result>
+        <result property="whoTowho" column="whoTowho"></result>
+        <result property="receiverTime" column="receiverTime"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="Admin">
+        INSERT INTO admin(name,password,adminStatus,createTime) VALUES (#{username},#{password},#{adminStatus},now());
+    </insert>
+
+    <select id="selectAllAdmin" resultMap="admin">
+        SELECT id, name, password,adminStatus,loginNum,createTime,identity FROM admin WHERE identity = 0;
+    </select>
+
+    <select id="selectAdmin" parameterType="Admin" resultMap="admin">
+        SELECT id, name, password,adminStatus,loginNum,createTime,identity FROM admin WHERE name=#{username} AND password=#{password};
+    </select>
+
+    <select id="selectAdminByName" parameterType="String" resultMap="admin">
+        SELECT id, name, password,adminStatus,loginNum,createTime,identity FROM admin WHERE name=#{adminName};
+    </select>
+
+    <update id="updateLoginNum" parameterType="int">
+        UPDATE admin SET loginNum=loginNum+1 WHERE id=#{id} ;
+    </update>
+
+    <update id="updatePwdByAdminId" parameterType="Admin">
+        UPDATE admin SET password=#{password} WHERE id=#{id} ;
+    </update>
+
+    <delete id="deleteAdmin" parameterType="int">
+        DELETE FROM admin WHERE id=#{id} ;
+    </delete>
+    <!-- AdminLog-->
+    <insert id="insertAdminLog" parameterType="AdminLog">
+        INSERT INTO adminlog(name,password,system,issuccess,loginTime,ipAddress) VALUES (#{name},#{password},#{system},#{isSuccess},now(),#{ipAddress});
+    </insert>
+
+    <select id="selectAllLoginLog" resultMap="adminLog">
+        SELECT * FROM adminlog
+    </select>
+
+    <delete id="deleteLoginLog" parameterType="int">
+        DELETE FROM  adminlog WHERE id IN
+        <foreach item="ids" collection="array" open="(" close=")" separator="," index="index">
+            #{ids}
+        </foreach>
+    </delete>
+
+    <insert id="insertChar" parameterType="Chat">
+        INSERT INTO chat(userId,adminId,context,whoTowho,receiverTime) VALUES (#{userId},#{adminId},#{context},#{whoTowho},now());
+    </insert>
+
+    <select id="selectChat" parameterType="Chat" resultMap="chat">
+        SELECT * FROM chat WHERE userId = #{userId} AND adminId = #{adminId}
+    </select>
+</mapper>

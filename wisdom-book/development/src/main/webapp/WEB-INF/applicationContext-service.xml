@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd"
+       default-lazy-init="true">
+
+    <!-- Activates scanning of @Autowired -->
+    <context:annotation-config/>
+
+    <!-- Activates scanning of @Service -->
+    <context:component-scan base-package="com.wisdom.**.service"/>
+
+    <bean id="mailEngine" lazy-init="false" class="com.wisdom.framework.core.util.MailEngine">
+        <property name="from" value="\${mail.default.from}"/>
+    </bean>
+
+    <bean id="mailSender" lazy-init="false" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="host" value="\${mail.host}"/>
+        <property name="port" value="\${mail.port}"/>
+        <property name="defaultEncoding" value="UTF-8"/>
+        <!-- Uncomment if you need to authenticate with your SMTP Server -->
+        <property name="username" value="\${mail.username}"/>
+        <property name="password" value="\${mail.password}"/>
+        <property name="protocol" value="\${mail.transport.protocol}"/>
+        <property name="javaMailProperties">
+           <!-- <value>
+                mail.smtp.auth=true
+            </value>-->
+            <props>
+                <prop key="mail.debug">true</prop>
+                <prop key="mail.smtp.auth">true</prop>
+                <prop key="mail.smtp.socketFactory.fallback">false</prop>
+                <prop key="mail.smtp.starttls.enable">true</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="mailMessage" lazy-init="false" class="org.springframework.mail.SimpleMailMessage" scope="prototype">
+        <property name="from" value="\${mail.default.from}"/>
+    </bean>
+
+</beans>

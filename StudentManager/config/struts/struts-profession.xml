@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+    "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="profession" namespace="/" extends="common">
+		<action name="professionAction_*" class="com.xc.profession.web.action.ProfessionAction" method="{1}">
+			<result name="findAll">/WEB-INF/pages/department/listDepartment.jsp</result>
+			<result name="addAndEdit">/WEB-INF/pages/department/addOrEditDepartment.jsp</result>
+			<result name="update" type="redirectAction">professionAction_findAll</result>
+		</action>
+	</package>
+</struts>

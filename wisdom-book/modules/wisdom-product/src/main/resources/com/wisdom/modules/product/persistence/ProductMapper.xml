@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wisdom.modules.product.persistence.ProductMapper">
+
+    <resultMap id="product" type="com.wisdom.modules.product.domain.Product">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="price" column="price"/>
+        <result property="pnum" column="pnum"/>
+        <result property="category" column="category"/>
+        <result property="description" column="description"/>
+        <result property="imgUrl" column="imgurl"/>
+        <result property="attackNum" column="attackNum"/>
+        <result property="display" column="display"/>
+        <result property="ifdelete" column="ifdelete"/>
+        <result property="publishTime" column="publishTime"/>
+        <result property="publishPerson" column="publishPerson"/>
+    </resultMap>
+
+    <resultMap id="cart" type="com.wisdom.modules.product.domain.Cart">
+        <id column="cart_id" property="cartId" />
+        <result column="bnum" property="bnum" />
+        <result column="price_total" property="priceTotal" />
+        <association property="product" javaType="Product" resultMap="product"/>
+    </resultMap>
+
+    <sql id="getListSql">
+        SELECT  id,name,price,pnum,category,description,imgurl,attackNum,display,ifdelete,publishTime,publishPerson FROM products
+    </sql>
+
+    <select id="selectAll" resultMap="product">
+        <include refid="getListSql"/> WHERE ifdelete = 0 AND ifSell = 0
+    </select>
+
+    <select id="getByUniqueKey" parameterType="String" resultType="Product">
+        <include refid="getListSql"/> where id=#{id}
+    </select>
+
+    <update id="update" parameterType="Product">
+        UPDATE products
+        <trim prefix="set" suffixOverrides=",">
+            <if test="name!=null">name=#{name},</if>
+            <if test="price!=null">price=#{price},</if>
+            <if test="pnum!=null">pnum=#{pnum},</if>
+            <if test="category!=null">category=#{category},</if>
+            <if test="description!=null">description=#{description},</if>
+            <if test="imgUrl!=null">imgurl=#{imgUrl},</if>
+            <if test="display!=null">display=#{display},</if>
+        </trim>
+        WHERE id=#{id}
+    </update>
+
+    <insert id="insert" parameterType="Product">
+        INSERT INTO products(id,name,price,pnum,category,description,imgurl,attackNum,display,publishTime)
+          VALUES(#{id},#{name},#{price},#{pnum},#{category},#{description},#{imgUrl},#{attackNum},#{display},now())
+    </insert>
+
+    <update id="deleteById" parameterType="String">
+        UPDATE products SET ifdelete = 1 WHERE id IN
+        <foreach item="ids" collection="array" open="(" close=")" separator="," index="index">
+            #{ids}
+        </foreach>
+    </update>
+
+    <select id="selectByPage" resultType="Product">
+        <include refid="getListSql"/> WHERE ifdelete = 0 AND ifSell = 0
+    </select>
+
+    <select id="selectBycategory" parameterType="java.lang.String" resultType="Product">
+        <include refid="getListSql"/> WHERE ifdelete = 0 AND ifSell = 0
+        <if test="category!=null"  >
+            AND category=#{category,jdbcType=VARCHAR}
+        </if>
+
+    </select>
+
+    <select id="selectByBookName" parameterType="java.lang.String" resultType="Product">
+        <include refid="getListSql"/> WHERE name LIKE '%${bookName}%' AND ifdelete = 0 AND ifSell = 0
+    </select>
+
+    <select id="selectByName" parameterType="String" resultType="String">
+        SELECT name FROM products WHERE name LIKE '%${name}%' AND ifdelete = 0
+    </select>
+
+    <select id="selectRSell" resultMap="product">
+        SELECT * FROM products WHERE ifSell = 1;
+    </select>
+
+    <update id="updateIfSell" parameterType="String">
+        UPDATE products SET ifSell=0 WHERE id = #{pid}
+    </update>
+
+    <update id="updateAttackNum" parameterType="String">
+        UPDATE products SET attackNum=attackNum+1 WHERE id = #{id}
+    </update>
+
+</mapper>

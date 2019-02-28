@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+    "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<!-- #1 常量 -->
+	<!-- 1.1开发模式 -->
+	<constant name="struts.devMode" value="false"></constant>
+	<!-- 1.2标签主题，简单风格 -->
+	<constant name="struts.ui.theme" value="simple"></constant>
+	
+	<!-- #2 公共项 -->
+	<package name="common" namespace="/" extends="struts-default">
+		<!-- 拦截器配置 -->
+		<interceptors>
+			<!-- 声明拦截器 -->
+			<interceptor name="loginInterceptor" class="com.xc.web.interceptor.LoginInterceptor"></interceptor>
+			<!-- 自定义拦截器 -->
+			<interceptor-stack name="loginStack">
+				<interceptor-ref name="defaultStack"></interceptor-ref>
+				<!-- 自定义拦截器需要进行对login不拦截 
+					*excludeMethods 配置不包含的方法，多个方法使用逗号分隔
+				-->
+				<interceptor-ref name="loginInterceptor">
+					<param name="excludeMethods">login</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+		<!-- 声明默认 -->
+		<default-interceptor-ref name="loginStack"></default-interceptor-ref>
+		<!-- 默认action，如果找不到action，默认执行的action -->
+		<!-- <default-action-ref name="managerAction_login"></default-action-ref> -->
+		<!-- 全局结果集 -->
+		<global-results>
+			<result name="login">/WEB-INF/pages/login.jsp</result>
+		</global-results>
+		<!-- 不写的话就默认执行execute()方法，默认访问SUCCESS -->
+		<action name="uiAction_*_*">
+			<result>/WEB-INF/pages/{1}/{2}.jsp</result>
+		</action>
+	</package>
+	
+	<!-- <package name="front" namespace="/" extends="struts-default" >  
+	    <default-action-ref name="index"></default-action-ref>  
+	    <action name="index" class="com.xc.manager.web.action.ManagerAction" method="def">  
+	            <result>/index.jsp</result>  
+	    </action>  
+	</package> --> 
+	<!-- Manager -->
+	<include file="struts/struts-manager.xml"></include>
+	<!-- Student -->
+	<include file="struts/struts-student.xml"></include>
+	<!-- profession -->
+	<include file="struts/struts-profession.xml"></include>
+	<!-- teacher -->
+	<include file="struts/struts-teacher.xml"></include>
+</struts>

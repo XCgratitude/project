@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+    "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="student" namespace="/" extends="common">
+		<action name="studentAction_*" class="com.xc.student.web.action.StudentAction" method="{1}">
+			<!-- 查询成功 -->
+			<result name="findAll">/WEB-INF/pages/student/listStudent.jsp</result>
+			<!-- 通过Id查 -->
+			<result name="findById">/WEB-INF/pages/student/showStudent.jsp</result>
+			<!-- editOrAdd -->
+			<result name="edit">/WEB-INF/pages/student/addOrEditStudent.jsp</result>
+			<!-- 更新 -->
+			<result name="updateStudent" type="redirectAction">studentAction_selectPage</result>
+		</action>
+	</package>
+	
+</struts>

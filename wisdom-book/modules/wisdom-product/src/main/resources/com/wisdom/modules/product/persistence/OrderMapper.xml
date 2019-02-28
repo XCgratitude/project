@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wisdom.modules.product.persistence.OrderMapper">
+
+    <resultMap id="user" type="User">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="gender" column="gender"/>
+        <result property="email" column="email"/>
+        <result property="telephone" column="telephone"/>
+        <result property="introduce" column="introduce"/>
+        <result property="activeCode" column="activeCode"/>
+        <result property="role" column="role"/>
+        <result property="state" column="state"/>
+        <result property="registTime" column="registTime" jdbcType="TIMESTAMP" javaType="java.sql.Timestamp"/>
+    </resultMap>
+
+    <resultMap id="product" type="com.wisdom.modules.product.domain.Product">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="price" column="price"/>
+        <result property="pnum" column="pnum"/>
+        <result property="category" column="category"/>
+        <result property="description" column="description"/>
+        <result property="imgUrl" column="imgurl"/>
+    </resultMap>
+
+    <resultMap id="cart" type="com.wisdom.modules.product.domain.Cart">
+        <id column="cart_id" property="cartId" />
+        <result column="bnum" property="bnum" />
+        <result column="price_total" property="priceTotal" />
+        <result column="product_id" property="productId" />
+        <association property="product" javaType="Product" resultMap="product"/>
+    </resultMap>
+
+    <resultMap id="orderItem" type="com.wisdom.modules.product.domain.OrderItem">
+        <result column="buynum" property="buyNum" />
+        <association property="product" javaType="Product" resultMap="product"/>
+        <association property="order" javaType="Order" resultMap="order"/>
+    </resultMap>
+    <!-- 接收地址-->
+    <resultMap id="receiver" type="com.wisdom.modules.product.domain.Receiver">
+        <id property="userId" column="user_id"/>
+        <result property="receiverAddress" column="receiverAddress"/>
+        <result property="receiverName" column="receiverName"/>
+        <result property="receiverPhone" column="receiverPhone"/>
+    </resultMap>
+    <!-- order操作-->
+    <resultMap id="order" type="com.wisdom.modules.product.domain.Order">
+        <id property="id" column="id"/>
+        <result property="money" column="money"/>
+        <result property="receiverAddress" column="receiverAddress"/>
+        <result property="receiverName" column="receiverName"/>
+        <result property="receiverPhone" column="receiverPhone"/>
+        <result property="payState" column="paystate"/>
+        <result property="orderTime" column="ordertime"/>
+        <result property="userId" column="user_id"/>
+        <!--<association property="user" javaType="User" resultMap="user"/>-->
+    </resultMap>
+
+    <sql id="getListSql">
+          SELECT id, money, receiverAddress, receiverName, receiverPhone, paystate, ordertime, user_id  FROM orders
+    </sql>
+
+    <select id="selectOrderById" parameterType="int" resultMap="order">
+        <include refid="getListSql"/> WHERE user_id = #{id};
+    </select>
+
+    <select id="selectOrderByOrderId" parameterType="String" resultMap="order">
+        <include refid="getListSql"/> WHERE id = #{orderId};
+    </select>
+    <!-- orderItem操作-->
+    <select id="selectOrderInfoById" parameterType="String" resultMap="orderItem">
+         SELECT p.id,p.name,p.price,o.buynum FROM products p,orderitem o WHERE o.order_id = #{id} AND o.product_id = p.id;
+    </select>
+
+    <select id="selectCartByUserId" parameterType="int" resultMap="cart">
+        SELECT c.cart_id, c.bnum,c.price_total, c.product_id,p.name,p.pnum,p.price,p.category FROM products p,cart c WHERE c.user_id = #{userId} AND c.product_id = p.id;
+    </select>
+
+    <select id="getByUniqueKey" parameterType="String" resultType="Product">
+        SELECT id,name,price,pnum,category,description,imgurl FROM products where id=#{id}
+    </select>
+
+    <insert id="insertCart" parameterType="Cart">
+        <selectKey resultType="java.lang.String" order="BEFORE" keyProperty="cartId">
+            SELECT uuid()
+        </selectKey>
+        INSERT INTO cart(cart_id, bnum, price_total, product_id, user_id) VALUES (#{cartId},#{bnum},#{priceTotal},#{productId},#{userId})
+    </insert>
+
+    <insert id="insertOrder" parameterType="Order">
+        INSERT INTO orders(id, money, receiverAddress, receiverName, receiverPhone, paystate, ordertime,user_id )
+          VALUES (#{id},#{money},#{receiverAddress},#{receiverName},#{receiverPhone},0,now(),#{userId})
+    </insert>
+
+    <insert id="insertOrderItem" parameterType="java.util.List">
+        INSERT INTO orderitem(order_id, product_id, buynum) VALUES
+        <foreach collection="list" item="OrderItems" index="index" separator=",">
+            (#{OrderItems.orderId},#{OrderItems.productId},#{OrderItems.buyNum})
+        </foreach>
+    </insert>
+
+    <delete id="deleteCartByUserId" parameterType="int">
+        DELETE FROM cart WHERE user_id=#{id}
+    </delete>
+
+    <update id="modifyOrderState" parameterType="String">
+        UPDATE orders SET paystate = 1 WHERE id=#{r6_order}
+    </update>
+
+    <delete id="deleteOrderByOrderId" parameterType="String">
+        DELETE FROM orders WHERE id=#{orderId}
+    </delete>
+
+    <delete id="deleteOrderItemByOrderId" parameterType="String">
+        DELETE FROM orderitem WHERE order_id=#{orderId}
+    </delete>
+
+    <delete id="deleteCartByPId" parameterType="String">
+        DELETE FROM cart WHERE cart_id=#{cartId}
+    </delete>
+
+    <update id="updateCartBnum" parameterType="Cart">
+        UPDATE cart SET bnum=#{bnum},price_total=#{priceTotal} WHERE cart_id=#{cartId}
+    </update>
+
+    <select id="selectCartById" parameterType="Cart" resultMap="cart">
+        SELECT c.cart_id, c.bnum,c.price_total, c.product_id,p.name,p.pnum,p.price,p.category FROM products p,cart c WHERE p.id=c.product_id AND cart_id=#{cartId}
+    </select>
+
+    <select id="selectAllOrder" parameterType="Cart" resultMap="cart">
+        <include refid="getListSql"/>
+    </select>
+
+    <select id="selectPayOrder" parameterType="int" resultMap="order">
+        <include refid="getListSql"/>
+        <if test="payState!=2">
+            WHERE paystate = #{payState}
+        </if>
+    </select>
+
+    <select id="selectReceiverByUserId" parameterType="int" resultMap="receiver">
+        SELECT * FROM receiver WHERE user_id = #{userId}
+    </select>
+
+    <update id="updateReceiver" parameterType="Receiver">
+        UPDATE receiver SET receiverAddress = #{receiverAddress},receiverName = #{receiverName},receiverPhone = #{receiverPhone} WHERE user_id=#{userId}
+    </update>
+
+    <insert id="insertReceiver" parameterType="Receiver">
+        insert into receiver values (#{userId},#{receiverAddress},#{receiverName},#{receiverPhone});
+    </insert>
+</mapper>

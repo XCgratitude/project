@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+    "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="teacher" namespace="/" extends="common">
+		<action name="teacherAction_*" class="com.xc.teacher.web.action.TeacherAction" method="{1}">
+			<!-- 查询成功 -->
+			<result name="findAll">/WEB-INF/pages/teacher/listTeacher.jsp</result>
+			<!-- saveOrUpdate -->
+			<result name="update" type="redirectAction">teacherAction_findAll</result>
+			<!-- editOrAdd -->
+			<result name="addAddEdit">/WEB-INF/pages/teacher/addEditTeacher.jsp</result>
+			<!-- 更新 -->
+		</action>
+	</package>
+	
+</struts>
