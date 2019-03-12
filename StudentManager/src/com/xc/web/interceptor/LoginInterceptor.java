@@ -10,20 +10,20 @@ public class LoginInterceptor extends MethodFilterInterceptor {
 
 	@Override
 	protected String doIntercept(ActionInvocation invocation) throws Exception {
-		//ÅĞ¶Ïsession×÷ÓÃÓòÊÇ·ñÓĞÓÃ»§ĞÅÏ¢£¬Ã»ÓĞ¾ÍÀ¹½Ø
+		//åˆ¤æ–­sessionä½œç”¨åŸŸæ˜¯å¦æœ‰ç”¨æˆ·ä¿¡æ¯ï¼Œæ²¡æœ‰å°±æ‹¦æˆª
 		Object obj = ActionContext.getContext().getSession().get("loginManager");
 		if(obj == null){
-			//Ã»ÓĞĞèÒªµÇÂ¼
-			//ÓÑºÃÌáÊ¾
+			//æ²¡æœ‰éœ€è¦ç™»å½•
+			//å‹å¥½æç¤º
 			Object action = invocation.getAction();
-			//ÅĞ¶Ï£¬ÔËĞĞÊ±ÊÇ·ñÊÇActionSupport
+			//åˆ¤æ–­ï¼Œè¿è¡Œæ—¶æ˜¯å¦æ˜¯ActionSupport
 			if(action instanceof ActionSupport){
 				ActionSupport actionSupport = (ActionSupport) action;
-				actionSupport.addFieldError("", "ÇëµÇÂ¼");
+				actionSupport.addFieldError("", "è¯·ç™»å½•");
 			}
 			return "login";
 		}
-		//µÇÂ¼£¬·ÅĞĞ
+		//ç™»å½•ï¼Œæ”¾è¡Œ
 		return invocation.invoke();
 	}
 

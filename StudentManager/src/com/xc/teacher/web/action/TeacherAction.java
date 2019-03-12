@@ -18,9 +18,9 @@ import com.xc.teacher.service.TeacherService;
 public class TeacherAction extends BaseAction<Teacher> {
 
 	public String findAll(){
-		//查询所有老师
+		//鏌ヨ鎵�鏈夎�佸笀
 		PageBean<Teacher> pageBean = this.getTeacherService().findAll(this.getModel(), this.getCurrentPage(), this.getPageSize());
-		//放入map集合
+		//鏀惧叆map闆嗗悎
 		ActionContext.getContext().put("pageBean", pageBean);
 		
 		List<Teacher> teacherList = this.getTeacherService().findAll();

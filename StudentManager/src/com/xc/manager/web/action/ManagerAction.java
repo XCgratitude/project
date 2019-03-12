@@ -16,7 +16,7 @@ public class ManagerAction extends BaseAction<Manager> {
 			
 			return "success";
 		}
-		this.addFieldError("", "用户名或密码错误");
+		this.addFieldError("", "鐢ㄦ埛鍚嶆垨瀵嗙爜閿欒");
 		
 		return "login";
 	}
